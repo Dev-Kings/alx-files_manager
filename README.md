@@ -25,16 +25,16 @@ This project is designed to help you assemble various back-end concepts into a c
 ## Resources
 
 ### Read or Watch:
-- [Node.js Getting Started](https://nodejs.org/en/docs/)
-- [Process API Documentation](https://nodejs.org/dist/latest-v12.x/docs/api/process.html)
+- [Node.js Getting Started](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)
+- [Process API Documentation](https://node.readthedocs.io/en/latest/api/process/)
 - [Express Getting Started](https://expressjs.com/en/starter/installing.html)
 - [Mocha Documentation](https://mochajs.org/)
-- [Nodemon Documentation](https://nodemon.io/)
-- [MongoDB Documentation](https://www.mongodb.com/docs/)
-- [Bull](https://docs.bullmq.io/)
+- [Nodemon Documentation](https://github.com/remy/nodemon#nodemon)
+- [MongoDB Documentation](https://github.com/mongodb/node-mongodb-native)
+- [Bull](https://github.com/OptimalBits/bull)
 - [Image Thumbnail](https://www.npmjs.com/package/image-thumbnail)
 - [Mime-Types](https://www.npmjs.com/package/mime-types)
-- [Redis](https://redis.io/documentation)
+- [Redis](https://github.com/redis/node-redis)
 
 ---
 
