@@ -1,4 +1,5 @@
-import { MongoClient } from 'mongodb';
+const sha1 = require('sha1');
+const { MongoClient, ObjectId } = require('mongodb');
 
 class DBClient {
   constructor() {
@@ -33,8 +34,21 @@ class DBClient {
     const filesCollection = this.db.collection('files');
     return filesCollection.countDocuments();
   }
+
+  async findUserByEmailAndPassword(email, password) {
+    if (!this.db) {
+      throw new Error('Database not initialized');
+    }
+
+    const hashedPassword = sha1(password);
+    return this.db.collection('users').findOne({ email, password: hashedPassword });
+  }
+
+  async findUserById(id) {
+    return this.db.collection('users').findOne({ _id: ObjectId(id) });
+  }
 }
 
 // Export an instance of DBClient
 const dbClient = new DBClient();
-export default dbClient;
+module.exports = dbClient;
