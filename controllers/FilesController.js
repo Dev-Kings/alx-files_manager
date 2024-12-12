@@ -109,10 +109,9 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // const { parentId = '0', page = 0 } = req.query;
     // Handle default values for parentId and page
     const parentId = req.query.parentId || '0';
-    const page = parseInt(req.query.page, 10) || 0;
+    const page = parseInt(req.query.page || '0', 10)
     const itemsPerPage = 20;
 
     const query = {
@@ -125,7 +124,7 @@ class FilesController {
         .collection('files')
         .aggregate([
           { $match: query },
-          { $skip: itemsPerPage * parseInt(page, 10) },
+          { $skip: itemsPerPage * page },
           { $limit: itemsPerPage },
         ])
         .toArray();
