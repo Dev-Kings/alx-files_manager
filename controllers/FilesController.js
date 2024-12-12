@@ -31,8 +31,15 @@ class FilesController {
       return res.status(400).json({ error: 'Missing type' });
     }
 
-    if (type !== 'folder' && !data) {
-      return res.status(400).json({ error: 'Missing data' });
+    // if (type !== 'folder' && !data) {
+    //   return res.status(400).json({ error: 'Missing data' });
+    // }
+
+     // Validate `data` for non-folder types
+    if (type !== 'folder') {
+      if (!data || typeof data !== 'string' || data.trim() === '') {
+        return res.status(400).json({ error: 'Missing data' });
+      }
     }
 
     if (parentId !== 0) {
