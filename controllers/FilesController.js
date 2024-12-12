@@ -111,7 +111,7 @@ class FilesController {
 
     // Handle default values for parentId and page
     const parentId = req.query.parentId || '0';
-    const page = parseInt(req.query.page || '0', 10)
+    const page = parseInt(req.query.page, 10) || 0;
     const itemsPerPage = 20;
 
     const query = {
@@ -124,7 +124,7 @@ class FilesController {
         .collection('files')
         .aggregate([
           { $match: query },
-          { $skip: itemsPerPage * page },
+          { $skip: itemsPerPage * parseInt(page, 10) },
           { $limit: itemsPerPage },
         ])
         .toArray();
