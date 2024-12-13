@@ -58,7 +58,11 @@ class FilesController {
 
     if (type === 'folder') {
       const result = await dbClient.db.collection('files').insertOne(fileDoc);
-      return res.status(201).json({ id: result.insertedId, ...fileDoc });
+
+      // Exclude the _id from the response
+      const { _id, ...fileDocWithoutId } = fileDoc;
+
+      return res.status(201).json({ id: result.insertedId, ...fileDocWithoutId });
     }
 
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
@@ -73,7 +77,10 @@ class FilesController {
 
     const result = await dbClient.db.collection('files').insertOne(fileDoc);
 
-    return res.status(201).json({ id: result.insertedId, ...fileDoc });
+    // Exclude `localPath` from the response and renaming `_id` to `id`
+    const { localPath: _, _id, ...responseDoc } = fileDoc;
+
+    return res.status(201).json({ id: result.insertedId, ...responseDoc });
   }
 
   // GET /files/:id
