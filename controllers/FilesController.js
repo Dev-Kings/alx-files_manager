@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
 import { ObjectId } from 'mongodb';
+import mime from 'mime-types';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -182,6 +183,8 @@ class FilesController {
     const userId = await redisClient.get(`auth_${token}`);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
+    console.log(req.params);
+    console.log(userId);
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({ _id: ObjectId(fileId), userId });
     if (!file) return res.status(404).json({ error: 'Not found' });
@@ -200,6 +203,52 @@ class FilesController {
       isPublic: updatedFile.isPublic,
       parentId: updatedFile.parentId,
     });
+  }
+
+  static async getFile(req, res) {
+    const fileId = req.params.id;
+    const token = req.header('X-Token');
+    let userId = null;
+
+    // Authenticate the user (if a token is provided)
+    if (token) {
+      userId = await redisClient.get(`auth_${token}`);
+    }
+
+    try {
+      // Find the file document by ID
+      const file = await dbClient.db.collection('files').findOne({ _id: ObjectId(fileId) });
+
+      if (!file) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      // Check if the file is public or the user is the owner
+      if (!file.isPublic && (!userId || file.userId.toString() !== userId)) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      // Check if the file is a folder
+      if (file.type === 'folder') {
+        return res.status(400).json({ error: "A folder doesn't have content" });
+      }
+
+      // Check if the file is locally present
+      if (!fs.existsSync(file.localPath)) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+
+      // Get the MIME type of the file
+      const mimeType = mime.lookup(file.name) || 'application/octet-stream';
+
+      // Return the content of the file
+      res.setHeader('Content-Type', mimeType);
+      const fileContent = fs.readFileSync(file.localPath);
+      return res.status(200).send(fileContent);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 
